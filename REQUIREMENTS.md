@@ -3,40 +3,47 @@ The company stakeholders want to create an online storefront to showcase their g
 
 These are the notes from a meeting with the frontend developer that describe what endpoints the API needs to supply, as well as data shapes the frontend and backend have agreed meet the requirements of the application. 
 
+<!--TODO: Modify as needed-->
 ## API Endpoints
+    app.get('/orders', index)
+    app.get('/orders/:id', show)
+    app.post('/orders/:id/products', addProduct)
+    app.post('/orders/:userid')
+    app.get('/products', index)
+    app.get('/products/:id', show)
+    app.post('/products', create)
+    app.get('/users', index)
+    app.get('/users/:id', show)
+    app.post('/users', create)
+
 #### Products
-- Index 
-- Show
-- Create [token required]
-- [OPTIONAL] Top 5 most popular products 
-- [OPTIONAL] Products by category (args: product category)
+- Index -- Done
+- Show -- Done
+- Create [token required] -- Done
 
 #### Users
-- Index [token required]
-- Show [token required]
-- Create N[token required]
+- Index [token required] -- Done
+- Show [token required] -- Done
+- Create N[token required] -- Done
 
 #### Orders
-- Current Order by user (args: user id)[token required]
-- [OPTIONAL] Completed Orders by user (args: user id)[token required]
+- Current Order by user (args: user id)[token required] -- WIP
 
 ## Data Shapes
 #### Product
--  id
-- name
-- price
-- [OPTIONAL] category
+-  id -- Done
+- name -- Done
+- price -- Done
 
 #### User
-- id
-- firstName
-- lastName
-- password
+- id -- Done
+- firstName -- Done
+- lastName -- Done
+- password -- Done
 
 #### Orders
-- id
-- id of each product in the order
-- quantity of each product in the order
-- user_id
-- status of order (active or complete)
-
+- id -- Done
+- id of each product in the order -- Done
+- quantity of each product in the order -- Done
+- user_id -- Done
+- status of order (active or complete) -- Done
