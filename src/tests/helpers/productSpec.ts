@@ -36,8 +36,6 @@ it('show method should return a single product', async () => {
 });
 
 it('create method should create a single product', async () => {
-    // TODO: We need to test if the token is valid or not.
-
     const product: Product = {
         id: 4,
         name: "Peach",

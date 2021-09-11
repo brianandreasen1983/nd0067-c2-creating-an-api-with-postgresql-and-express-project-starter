@@ -25,15 +25,6 @@ const show = async(_req: Request, res: Response) => {
 }
 
 const create = async(req: Request, res: Response) => {
-    try {
-        const authorizationHeader = req.headers.authorization
-        const token = authorizationHeader.split(' ')[1]
-        jwt.verify(token, process.env.TOKEN_SECRET)
-    } catch (error) {
-        res.send(401)
-        throw new JsonWebTokenError(`Token is invalid or no token provided...${error}`)
-    }
-
     const product: Product = {
         name: req.body.name,
         price: req.body.price
@@ -48,10 +39,22 @@ const create = async(req: Request, res: Response) => {
     }
 }
 
+const verifyAuthToken = (req: Request, res: Response, next) => {
+    try {
+        const authorizationHeader = req.headers.authorization
+        const token = authorizationHeader.split(' ')[1]
+        const decoded = jwt.verify(token, process.env.TOKEN_SECRET)
+
+        next()
+    } catch (error) {
+        res.status(401)
+    }
+}
+
 const productRoutes = (app: express.Application) => {
     app.get('/products', index)
     app.get('/products/:id', show)
-    app.post('/products', create)
+    app.post('/products', verifyAuthToken, create)
 }
 
 export default productRoutes

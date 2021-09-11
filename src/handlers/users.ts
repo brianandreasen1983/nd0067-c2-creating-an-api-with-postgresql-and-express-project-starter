@@ -7,16 +7,6 @@ const userStore = new UserStore()
 
 const index = async(req: Request, res: Response) => {
     try {
-       const authorizationHeader = req.headers.authorization
-       const token = authorizationHeader.split(' ')[1]
-       jwt.verify(token, process.env.TOKEN_SECRET)
-    } catch (error) {
-        res.status(401)
-        throw new JsonWebTokenError(`Token is invalid or no token provided...${error}`)
-    }
-
-    // Only queries if the jwt is verified otherwise it errors.
-    try {
         const users = await userStore.index()
         res.status(200)
         res.json(users)
@@ -28,15 +18,6 @@ const index = async(req: Request, res: Response) => {
 
 const show = async(req: Request, res: Response) => {
     try {
-       const authorizationHeader = req.headers.authorization
-       const token = authorizationHeader.split(' ')[1]
-       jwt.verify(token, process.env.TOKEN_SECRET)
-    } catch (error) {
-        res.status(401)
-        throw new JsonWebTokenError(`Token is invalid or no token provided...${error}`)
-    }
-
-    try {
         const user = await userStore.show(req.body.id)
         res.status(200)
         res.json(user)
@@ -47,16 +28,6 @@ const show = async(req: Request, res: Response) => {
 }
 
 const create = async(req: Request, res: Response) => {
-    try {
-       const authorizationHeader = req.headers.authorization
-       const token = authorizationHeader.split(' ')[1]
-       jwt.verify(token, process.env.TOKEN_SECRET)
-    } catch (error) {
-        res.status(401)
-        throw new JsonWebTokenError(`Token is invalid or no token provided...${error}`)
-    }
-
-    // Does not pass this point unless the JWT is verified.
     const user: User = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -74,9 +45,21 @@ const create = async(req: Request, res: Response) => {
     }
 }
 
+const verifyAuthToken = (req: Request, res: Response, next) => {
+    try {
+        const authorizationHeader = req.headers.authorization
+        const token = authorizationHeader.split(' ')[1]
+        const decoded = jwt.verify(token, process.env.TOKEN_SECRET)
+
+        next()
+    } catch (error) {
+        res.status(401)
+    }
+}
+
 const userRoutes = (app: express.Application) => {
-    app.get('/users', index)
-    app.get('/users/:id', show)
+    app.get('/users', verifyAuthToken, index)
+    app.get('/users/:id', verifyAuthToken, show)
     app.post('/users', create)
 }
 

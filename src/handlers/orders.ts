@@ -15,16 +15,6 @@ const index = async(req: Request, res: Response) => {
 }
 
 const show = async(req: Request, res: Response) => {
-    try {
-        const authorizationHeader = req.headers.authorization
-        const token = authorizationHeader.split(' ')[1]
-        jwt.verify(token, process.env.TOKEN_SECRET)
-     } catch (error) {
-         console.log(error)
-         res.status(401)
-         throw new JsonWebTokenError(`Token is invalid or no token provided...${error}`)
-     }
-
      try {
         const orderId: number = parseInt(req.params.id)
         const order = await orderStore.show(orderId)
@@ -36,14 +26,6 @@ const show = async(req: Request, res: Response) => {
 }
 
 const addProduct = async(_req: Request, res: Response) => {
-    const authorizationHeader = _req.headers.authorization
-    const token = authorizationHeader.split(' ')[1]
-    try {
-        jwt.verify(token, process.env.TOKEN_SECRET)
-    } catch (error) {
-        throw new JsonWebTokenError(`Token is invalid or no token provided...${error}`)
-    }
-
     const orderId: string = _req.params.id
     const productId: string = _req.body.productId
     const quantity: number = parseInt(_req.body.quantity)
@@ -60,14 +42,6 @@ const addProduct = async(_req: Request, res: Response) => {
 }
 
 const currentOrderByUserId = async(req: Request, res: Response) => {
-    const authorizationHeader = req.headers.authorization
-    const token = authorizationHeader.split(' ')[1]
-    try {
-        jwt.verify(token, process.env.TOKEN_SECRET)
-    } catch (error) {
-        throw new JsonWebTokenError(`Token is invalid or no token provided...${error}`)
-    }
-
     const userId: number = parseInt(req.params.userid)
 
     try {
@@ -79,11 +53,25 @@ const currentOrderByUserId = async(req: Request, res: Response) => {
     }
 }
 
+const verifyAuthToken = (req: Request, res: Response, next) => {
+    try {
+        const authorizationHeader = req.headers.authorization
+        const token = authorizationHeader.split(' ')[1]
+        const decoded = jwt.verify(token, process.env.TOKEN_SECRET)
+        next()
+    } catch (error) {
+        res.status(401)
+        console.log(error)
+        res.status(401)
+        throw new JsonWebTokenError(`Token is invalid or no token provided...${error}`)
+    }
+}
+
 const orderRoutes = (app: express.Application) => {
     app.get('/orders', index)
     app.get('/orders/:id', show)
     app.post('/orders/:id/products', addProduct)
-    app.post('/orders/:userid', currentOrderByUserId)
+    app.post('/orders/:userid', verifyAuthToken, currentOrderByUserId)
 }
 
 export default orderRoutes

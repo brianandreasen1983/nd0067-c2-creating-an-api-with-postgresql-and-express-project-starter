@@ -54,7 +54,6 @@ export class UserStore {
         }
     }
 
-    // TODO: Modify the authenticate method
     async authenticate(username: string, password: string): Promise<User | null> {
         const conn = await Client.connect()
         const sql = 'SELECT password FROM users WHERE username=($1)'
