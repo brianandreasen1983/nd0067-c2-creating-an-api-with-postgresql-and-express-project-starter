@@ -50,6 +50,8 @@ Before submitting your project, spin it up and test each endpoint. If each one r
 ### 7. Setting up and connecting to the database.
 Ensure that you have postgres installed on our development computer before proceeding with any setup from this repository
 
+To install postgres if you are new to it follow the instructions here: https://www.postgresql.org/docs/9.3/tutorial-install.html
+
 -- TODO: Finish filling out the setup and connecting to the database.
 
 ### 8. Database Schema

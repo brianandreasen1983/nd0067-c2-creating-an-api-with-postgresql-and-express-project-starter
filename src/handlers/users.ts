@@ -16,8 +16,14 @@ const index = async(req: Request, res: Response) => {
     }
 
     // Only queries if the jwt is verified otherwise it errors.
-    const users = await userStore.index()
-    res.json(users)
+    try {
+        const users = await userStore.index()
+        res.status(200)
+        res.json(users)
+    } catch (error) {
+        throw new Error(`Unable to get the list of users: ${error}`)
+    }
+
 }
 
 const show = async(req: Request, res: Response) => {
@@ -30,8 +36,14 @@ const show = async(req: Request, res: Response) => {
         throw new JsonWebTokenError(`Token is invalid or no token provided...${error}`)
     }
 
-    const user = await userStore.show(req.body.id)
-    res.json(user)
+    try {
+        const user = await userStore.show(req.body.id)
+        res.status(200)
+        res.json(user)
+    } catch (error) {
+        throw new Error(`Unable to get the requested user: ${error}`)
+    }
+
 }
 
 const create = async(req: Request, res: Response) => {
@@ -54,7 +66,7 @@ const create = async(req: Request, res: Response) => {
     try {
         const newUser = await userStore.create(user)
         const token = jwt.sign({ user: newUser }, process.env.TOKEN_SECRET);
-        console.log(`CREATED THE USER: ${newUser}`)
+        res.status(201)
         res.json(token)
     } catch (error) {
         res.status(400)

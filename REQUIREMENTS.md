@@ -17,33 +17,33 @@ These are the notes from a meeting with the frontend developer that describe wha
     app.post('/users', create)
 
 #### Products
-- Index -- Done
-- Show -- Done
-- Create [token required] -- Done
+- Index
+- Show
+- Create [token required]
 
 #### Users
-- Index [token required] -- Done
-- Show [token required] -- Done
-- Create N[token required] -- Done
+- Index [token required]
+- Show [token required]
+- Create N[token required]
 
 #### Orders
-- Current Order by user (args: user id)[token required] -- WIP
+- Current Order by user (args: user id)[token required] 
 
 ## Data Shapes
 #### Product
--  id -- Done
-- name -- Done
-- price -- Done
+-  id 
+- name 
+- price
 
 #### User
-- id -- Done
-- firstName -- Done
-- lastName -- Done
-- password -- Done
+- id
+- firstName
+- lastName
+- password
 
 #### Orders
-- id -- Done
-- id of each product in the order -- Done
-- quantity of each product in the order -- Done
-- user_id -- Done
-- status of order (active or complete) -- Done
+- id
+- id of each product in the order (product_id)
+- quantity of each product in the order (quantity)
+- user_id
+- status of order (active or complete) (status)
