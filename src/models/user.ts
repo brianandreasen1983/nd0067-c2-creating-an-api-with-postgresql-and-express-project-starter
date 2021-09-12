@@ -2,17 +2,17 @@ import Client from '../database'
 import bcrypt from 'bcrypt'
 
 export type User = {
-    id: number
-    firstName: string
-    lastName: string
-    password: string
+    id?: number
+    firstname: string
+    lastname: string
+    password?: string
 }
 
 export class UserStore {
-    async index(): Promise<Array<User>> {
+    async index(): Promise<User[]> {
         try {
             const conn = await Client.connect()
-            const sql = 'SELECT * FROM users'
+            const sql = 'SELECT id, firstname, lastname FROM users'
             const result = await conn.query(sql)
             conn.release()
             return result.rows
@@ -21,19 +21,21 @@ export class UserStore {
         }
     }
 
-    async show(userId: Number): Promise<User> {
+    async show(userId: number): Promise<User> {
         try {
             const conn = await Client.connect()
-            const sql = 'SELECT * FROM users WHERE id=($1)'
+            const sql = `SELECT id, firstname, lastname FROM users WHERE id=(${userId});`
             const result = await conn.query(sql)
+            const user: User = result.rows[0]
+            console.log(user)
             conn.release()
-            return result.rows[0]
+            return user
         } catch (error) {
             throw new Error(`Unable to find a user with the id: ${userId}. Error: ${error}`)
         }
     }
 
-    async create(u: User): Promise<User> {
+    async create(firstName: string, lastName: string, password: string): Promise<User> {
         try {
             const saltRounds = process.env.SALT_ROUNDS
             const pepper = process.env.BCRYPT_PASSWORD
@@ -41,16 +43,22 @@ export class UserStore {
             const sql = 'INSERT INTO users (firstname, lastname, password) VALUES ($1, $2, $3) RETURNING *'
 
             const hash = bcrypt.hashSync(
-                u.password + pepper, 
+                password + pepper, 
                 parseInt(saltRounds)
               );
 
-            const result = await conn.query(sql, [u.firstName, u.lastName, hash])
+            const result = await conn.query(sql, [firstName, lastName, hash])
             const user = result.rows[0]
+
+            const newUser = {
+                id: user.id,
+                firstname: user.firstname,
+                lastname: user.lastname
+            }            
             conn.release()
-            return user
+            return newUser
         } catch (error) {
-            throw new Error(`Unable to create the user: ${u.firstName} ${u.lastName}. Error: ${error}`)
+            throw new Error(`Unable to create the user: ${firstName} ${lastName}. Error: ${error}`)
         }
     }
 

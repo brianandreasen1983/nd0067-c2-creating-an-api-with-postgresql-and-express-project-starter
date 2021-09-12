@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const user_1 = require("../../models/user");
 const userStore = new user_1.UserStore();
+// TODO: We should have a setup that allow us to increment the id instead of having to manually change it all the time.
 describe("User Model", () => {
     it('should have an index method', () => {
         expect(userStore.index).toBeDefined();
@@ -12,38 +13,37 @@ describe("User Model", () => {
     it('should have a create method', () => {
         expect(userStore.create).toBeDefined();
     });
-    it('', () => {
-        expect(userStore.authenticate).toBeDefined();
+    it('create method should return a single user that is new', async () => {
+        const user = {
+            firstname: "Brian",
+            lastname: "Andreasen",
+            password: "12345678"
+        };
+        const result = await userStore.create(user.firstname, user.lastname, user.password);
+        expect(result).toEqual({
+            id: 21,
+            firstname: "Brian",
+            lastname: "Andreasen",
+        });
     });
-});
-it('index method should return a list of users', async () => {
-    const result = await userStore.index();
-    expect(result).toEqual([{
-            id: 1,
-            firstName: "Brian",
-            lastName: "Andreasen",
-        }]);
-});
-// TODO: Write a test to return a single user by a given user id from the show method.
-it('show method should return a list of users', async () => {
-    const userId = 1;
-    const result = await userStore.show(userId);
-    expect(result).toEqual({
-        id: 1,
-        firstName: "Brian",
-        lastName: "Andreasen",
+    it('index method should return a list of users', async () => {
+        const result = await userStore.index();
+        expect(result).toEqual([{
+                id: 21,
+                firstname: "Brian",
+                lastname: "Andreasen",
+            }]);
     });
-});
-// TODO: How can we test that the password is hashed?
-it('create method should return a single user that is new', async () => {
-    const user = {
-        firstName: "Cora",
-        lastName: "Andreasen",
-    };
-    const result = await userStore.create(user);
-    expect(result).toEqual({
-        id: 2,
-        firstName: "Cora",
-        lastName: "Andreasen",
+    it('show method should return a single user by user id', async () => {
+        const userId = 21;
+        const result = await userStore.show(userId);
+        expect(result).toEqual({
+            id: 21,
+            firstname: "Brian",
+            lastname: "Andreasen",
+        });
+    });
+    afterEach(() => {
+        // TODO: Runs after each test...
     });
 });

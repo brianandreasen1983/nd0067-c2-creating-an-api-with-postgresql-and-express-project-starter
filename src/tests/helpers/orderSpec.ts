@@ -20,12 +20,22 @@ describe("Order Model", () => {
     });
 });
 
+it('create method should add a new product', async () => {
+    const result = await orderStore.addProduct(10, 1, 1)
+    expect(result).toEqual({
+        id: 1,
+        quantity: 10,
+        order_id: 1,
+        product_id: 1
+    });
+});
+
 it('index method should return a list of order', async () => {
     const result = await orderStore.index();
     expect(result).toEqual([{
         id: 1,
         user_id: 1,
-        status: 'active',
+        status: '',
     }]);
 });
 
@@ -34,19 +44,9 @@ it('show method should return a single order', async () => {
     expect(result).toEqual({
         id: 1,
         user_id: 1,
-        status: 'active',
+        status: '',
     })
 });
-
-// it('create method should add a new product', async () => {
-//     const result = await orderStore.addProduct(10, "3", "4")
-//     expect(result).toEqual({
-//         id: 3,
-//         quantity: 10,
-//         order_id: 4,
-//         status: 'active',
-//     });
-// });
 
 // it('gets the current order by the user id', async () => {
 //     const result = await orderStore.currentOrderByUser()

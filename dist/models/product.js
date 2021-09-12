@@ -9,7 +9,7 @@ class ProductStore {
     async index() {
         try {
             const conn = await database_1.default.connect();
-            const sql = "SELECT * FROM products";
+            const sql = "SELECT * FROM products;";
             const result = await conn.query(sql);
             conn.release();
             return result.rows;
@@ -21,11 +21,16 @@ class ProductStore {
     async show(productId) {
         try {
             const conn = await database_1.default.connect();
-            const sql = `SELECT * FROM products WHERE id=(${productId})`;
-            console.log(sql);
+            const sql = `SELECT * FROM products WHERE id=(${productId});`;
             const result = await conn.query(sql);
+            const product = result.rows[0];
+            const returnedProduct = {
+                id: product.id,
+                name: product.name,
+                price: product.price
+            };
             conn.release();
-            return result.rows[0];
+            return returnedProduct;
         }
         catch (error) {
             throw new Error(`Unable to find a product with id: ${productId}`);

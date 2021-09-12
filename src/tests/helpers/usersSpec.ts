@@ -2,6 +2,8 @@ import { User, UserStore} from '../../models/user'
 
 const userStore = new UserStore()
 
+// TODO: We should have a setup that allow us to increment the id instead of having to manually change it all the time.
+
 describe("User Model", () => {
     it('should have an index method', () => {
         expect(userStore.index).toBeDefined();
@@ -15,45 +17,41 @@ describe("User Model", () => {
         expect(userStore.create).toBeDefined();
     });
 
-    it('', () => {
-        expect(userStore.authenticate).toBeDefined();
+    it('create method should return a single user that is new', async () => {
+        const user: User = {
+            firstname: "Brian",
+            lastname: "Andreasen",
+            password: "12345678"
+        }
+    
+        const result = await userStore.create(user.firstname, user.lastname, user.password)
+        expect(result).toEqual({
+            id: 21,
+            firstname: "Brian",
+            lastname: "Andreasen",
+        })
     });
-});
+    
+    it('index method should return a list of users', async () => {
+        const result = await userStore.index()
+        expect(result).toEqual([{
+            id: 21,
+            firstname: "Brian",
+            lastname: "Andreasen",
+        }]) 
+    });
+    
+    it('show method should return a single user by user id', async () => {
+        const userId = 21
+        const result = await userStore.show(userId)
+        expect(result).toEqual({
+            id: 21,
+            firstname: "Brian",
+            lastname: "Andreasen",
+        }) 
+    });
 
-it('index method should return a list of users', async () => {
-    const result = await userStore.index()
-    expect(result).toEqual([{
-        id: 1,
-        firstName: "Brian",
-        lastName: "Andreasen",
-    }]) 
-});
-
-// TODO: Write a test to return a single user by a given user id from the show method.
-it('show method should return a list of users', async () => {
-    const userId = 1
-    const result = await userStore.show(userId)
-    expect(result).toEqual({
-        id: 1,
-        firstName: "Brian",
-        lastName: "Andreasen",
-        password: "$2b$10$79ufgIOCm5qux6DaKxRNc.083FjWDbgg7MbN5f.4Dbn/0eklVAnoK"
-    }) 
-});
-
-// TODO: How can we test that the password is hashed?
-it('create method should return a single user that is new', async () => {
-    const user: User = {
-        firstName: "Cora",
-        lastName: "Andreasen",
-        password: "Testing....",
-    }
-
-    const result = await userStore.create(user)
-    expect(result).toEqual({
-        id: 2,
-        firstName: "Cora",
-        lastName: "Andreasen",
-        password: "Testing....",
+    afterEach(() => {
+        // TODO: Runs after each test...
     })
 });

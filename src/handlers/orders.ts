@@ -4,7 +4,7 @@ import jwt, {JsonWebTokenError} from 'jsonwebtoken'
 
 const orderStore = new OrderStore()
 
-const index = async(req: Request, res: Response) => {
+const index = async(_req: Request, res: Response) => {
     try {
         const orders = await orderStore.index()
         res.status(200)
@@ -61,9 +61,8 @@ const verifyAuthToken = (req: Request, res: Response, next) => {
         next()
     } catch (error) {
         res.status(401)
-        console.log(error)
         res.status(401)
-        throw new JsonWebTokenError(`Token is invalid or no token provided...${error}`)
+        throw new JsonWebTokenError(`Invalid token or token has expired.`)
     }
 }
 

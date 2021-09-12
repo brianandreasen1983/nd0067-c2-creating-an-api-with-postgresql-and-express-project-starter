@@ -24,61 +24,54 @@ const jsonwebtoken_1 = __importStar(require("jsonwebtoken"));
 const userStore = new user_1.UserStore();
 const index = async (req, res) => {
     try {
-        const authorizationHeader = req.headers.authorization;
-        const token = authorizationHeader.split(' ')[1];
-        jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET);
+        const users = await userStore.index();
+        res.status(200);
+        res.json(users);
     }
     catch (error) {
-        res.status(401);
-        throw new jsonwebtoken_1.JsonWebTokenError(`Token is invalid or no token provided...${error}`);
+        throw new Error(`Unable to get the list of users: ${error}`);
     }
-    // Only queries if the jwt is verified otherwise it errors.
-    const users = await userStore.index();
-    res.json(users);
 };
 const show = async (req, res) => {
     try {
-        const authorizationHeader = req.headers.authorization;
-        const token = authorizationHeader.split(' ')[1];
-        jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET);
+        const user = await userStore.show(req.body.id);
+        res.status(200);
+        res.json(user);
     }
     catch (error) {
-        res.status(401);
-        throw new jsonwebtoken_1.JsonWebTokenError(`Token is invalid or no token provided...${error}`);
+        throw new Error(`Unable to get the requested user: ${error}`);
     }
-    const user = await userStore.show(req.body.id);
-    res.json(user);
 };
 const create = async (req, res) => {
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const password = req.body.password;
     try {
-        const authorizationHeader = req.headers.authorization;
-        const token = authorizationHeader.split(' ')[1];
-        jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET);
-    }
-    catch (error) {
-        res.status(401);
-        throw new jsonwebtoken_1.JsonWebTokenError(`Token is invalid or no token provided...${error}`);
-    }
-    // Does not pass this point unless the JWT is verified.
-    const user = {
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        password: req.body.password,
-    };
-    try {
-        const newUser = await userStore.create(user);
+        const newUser = await userStore.create(firstName, lastName, password);
         const token = jsonwebtoken_1.default.sign({ user: newUser }, process.env.TOKEN_SECRET);
-        console.log(`CREATED THE USER: ${newUser}`);
+        res.status(201);
         res.json(token);
     }
     catch (error) {
         res.status(400);
-        res.json(error + user);
+        res.json(error);
+    }
+};
+const verifyAuthToken = (req, res, next) => {
+    try {
+        const authorizationHeader = req.headers.authorization;
+        const token = authorizationHeader.split(' ')[1];
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET);
+        next();
+    }
+    catch (error) {
+        res.status(401);
+        throw new jsonwebtoken_1.JsonWebTokenError(`Invalid token or token has expired.`);
     }
 };
 const userRoutes = (app) => {
-    app.get('/users', index);
-    app.get('/users/:id', show);
+    app.get('/users', verifyAuthToken, index);
+    app.get('/users/:id', verifyAuthToken, show);
     app.post('/users', create);
 };
 exports.default = userRoutes;

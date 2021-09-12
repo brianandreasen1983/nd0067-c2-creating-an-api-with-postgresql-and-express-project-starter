@@ -48,6 +48,7 @@ const verifyAuthToken = (req: Request, res: Response, next) => {
         next()
     } catch (error) {
         res.status(401)
+        throw new JsonWebTokenError(`Invalid token or token has expired.`)
     }
 }
 

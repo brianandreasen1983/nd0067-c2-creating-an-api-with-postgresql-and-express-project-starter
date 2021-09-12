@@ -23,37 +23,54 @@ const jsonwebtoken_1 = __importStar(require("jsonwebtoken"));
 const product_1 = require("../models/product");
 const productStore = new product_1.ProductStore();
 const index = async (_req, res) => {
-    const products = await productStore.index();
-    res.json(products);
-};
-const show = async (_req, res) => {
-    const product = await productStore.show(_req.body.id);
-    res.json(product);
-};
-const create = async (req, res) => {
     try {
-        const authorizationHeader = req.headers.authorization;
-        const token = authorizationHeader.split(' ')[1];
-        jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET);
+        const products = await productStore.index();
+        res.status(200);
+        res.json(products);
     }
     catch (error) {
-        throw new jsonwebtoken_1.JsonWebTokenError(`Token is invalid or no token provided...${error}`);
+        throw new Error(`Unable to get products from the database: ${error}`);
     }
+};
+const show = async (_req, res) => {
+    try {
+        const product = await productStore.show(_req.body.id);
+        res.status(200);
+        res.json(product);
+    }
+    catch (error) {
+        throw new Error(`Unable to get the requested product: ${error}`);
+    }
+};
+const create = async (req, res) => {
     const product = {
         name: req.body.name,
         price: req.body.price
     };
     try {
         const newProduct = await productStore.create(product);
+        res.status(201);
         res.json(newProduct);
     }
     catch (error) {
         throw new Error(`Unable to create the product: ${product.name}. Error: ${error}`);
     }
 };
+const verifyAuthToken = (req, res, next) => {
+    try {
+        const authorizationHeader = req.headers.authorization;
+        const token = authorizationHeader.split(' ')[1];
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET);
+        next();
+    }
+    catch (error) {
+        res.status(401);
+        throw new jsonwebtoken_1.JsonWebTokenError(`Invalid token or token has expired.`);
+    }
+};
 const productRoutes = (app) => {
     app.get('/products', index);
     app.get('/products/:id', show);
-    app.post('/products', create);
+    app.post('/products', verifyAuthToken, create);
 };
 exports.default = productRoutes;

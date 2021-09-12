@@ -28,20 +28,18 @@ const show = async(req: Request, res: Response) => {
 }
 
 const create = async(req: Request, res: Response) => {
-    const user: User = {
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        password: req.body.password,
-    }
+        const firstName = req.body.firstName
+        const lastName = req.body.lastName
+        const password = req.body.password
 
     try {
-        const newUser = await userStore.create(user)
+        const newUser = await userStore.create(firstName, lastName, password)
         const token = jwt.sign({ user: newUser }, process.env.TOKEN_SECRET);
         res.status(201)
         res.json(token)
     } catch (error) {
         res.status(400)
-        res.json(error + user)
+        res.json(error)
     }
 }
 
@@ -54,6 +52,7 @@ const verifyAuthToken = (req: Request, res: Response, next) => {
         next()
     } catch (error) {
         res.status(401)
+        throw new JsonWebTokenError(`Invalid token or token has expired.`)
     }
 }
 

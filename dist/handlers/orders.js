@@ -22,27 +22,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const order_1 = require("../models/order");
 const jsonwebtoken_1 = __importStar(require("jsonwebtoken"));
 const orderStore = new order_1.OrderStore();
-const index = async (req, res) => {
-    const orders = await orderStore.index();
-    res.json(orders);
+const index = async (_req, res) => {
+    try {
+        const orders = await orderStore.index();
+        res.status(200);
+        res.json(orders);
+    }
+    catch (error) {
+        throw new Error(`Unable to get the orders from the database: ${error}`);
+    }
 };
 const show = async (req, res) => {
     try {
-        // const authorizationHeader = req.headers.authorization
-        // const token = authorizationHeader.split(' ')[1]
-        // jwt.verify(token, process.env.TOKEN_SECRET)
         const orderId = parseInt(req.params.id);
         const order = await orderStore.show(orderId);
+        res.status(200);
         res.json(order);
     }
     catch (error) {
-        // TODO: Fix the error handling if possible.
-        console.log(error);
-        res.status(401);
-        //  throw new JsonWebTokenError(`Token is invalid or no token provided...${error}`)
+        throw new Error(`Unable to get the order requested: ${error}`);
     }
-    const order = await orderStore.show(req.body.userid);
-    res.json(order);
 };
 const addProduct = async (_req, res) => {
     const orderId = _req.params.id;
@@ -50,6 +49,7 @@ const addProduct = async (_req, res) => {
     const quantity = parseInt(_req.body.quantity);
     try {
         const addedProduct = await orderStore.addProduct(quantity, orderId, productId);
+        res.status(201);
         res.json(addedProduct);
     }
     catch (error) {
@@ -57,29 +57,34 @@ const addProduct = async (_req, res) => {
         res.json(console.error());
     }
 };
-// TODO: Protect this route by verifying the JWT.
 const currentOrderByUserId = async (req, res) => {
-    const authorizationHeader = req.headers.authorization;
-    const token = authorizationHeader.split(' ')[1];
-    try {
-        jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET);
-    }
-    catch (error) {
-        throw new jsonwebtoken_1.JsonWebTokenError(`There has been an error with the JWT: ${error}`);
-    }
     const userId = parseInt(req.params.userid);
     try {
         const ordersByUserId = orderStore.currentOrderByUser(userId);
+        res.status(200);
         res.json(ordersByUserId);
     }
     catch (error) {
         throw new Error(`Unable to get the order for the user id: ${userId}`);
     }
 };
+const verifyAuthToken = (req, res, next) => {
+    try {
+        const authorizationHeader = req.headers.authorization;
+        const token = authorizationHeader.split(' ')[1];
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET);
+        next();
+    }
+    catch (error) {
+        res.status(401);
+        res.status(401);
+        throw new jsonwebtoken_1.JsonWebTokenError(`Invalid token or token has expired.`);
+    }
+};
 const orderRoutes = (app) => {
     app.get('/orders', index);
     app.get('/orders/:id', show);
     app.post('/orders/:id/products', addProduct);
-    app.post('/orders/:userid');
+    app.post('/orders/:userid', verifyAuthToken, currentOrderByUserId);
 };
 exports.default = orderRoutes;
