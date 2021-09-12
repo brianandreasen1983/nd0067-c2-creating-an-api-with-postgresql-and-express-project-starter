@@ -54,7 +54,7 @@ export class OrderStore {
     async currentOrderByUser(userId: number): Promise<Order> {
         try {
             const sql = `SELECT order_products.id, quantity, order_id, product_id, orders.user_id, orders.status 
-                         FROM public.order_products RIGHT JOIN orders ON orders.id = order_products.order_id WHERE orders.user_id = ${userId};`
+                         FROM public.order_products RIGHT JOIN orders ON orders.id = order_products.order_id WHERE orders.user_id = (${userId});`
             const conn = await Client.connect()
             const result = await conn.query(sql, [userId])
             const order = result.rows[0]
