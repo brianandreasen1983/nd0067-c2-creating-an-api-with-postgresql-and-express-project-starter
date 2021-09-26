@@ -48,9 +48,12 @@ const create = async (req, res) => {
     const password = req.body.password;
     try {
         const newUser = await userStore.create(firstName, lastName, password);
-        const token = jsonwebtoken_1.default.sign({ user: newUser }, process.env.TOKEN_SECRET);
-        res.status(201);
-        res.json(token);
+        const tokenSecret = process.env.TOKEN_SECRET;
+        if (tokenSecret != undefined) {
+            const token = jsonwebtoken_1.default.sign({ user: newUser }, tokenSecret);
+            res.status(201);
+            res.json(token);
+        }
     }
     catch (error) {
         res.status(400);
@@ -60,9 +63,12 @@ const create = async (req, res) => {
 const verifyAuthToken = (req, res, next) => {
     try {
         const authorizationHeader = req.headers.authorization;
-        const token = authorizationHeader.split(' ')[1];
-        const decoded = jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET);
-        next();
+        const tokenSecret = process.env.TOKEN_SECRET;
+        if (authorizationHeader !== undefined && tokenSecret !== undefined) {
+            const token = authorizationHeader.split(' ')[1];
+            jsonwebtoken_1.default.verify(token, tokenSecret);
+            next();
+        }
     }
     catch (error) {
         res.status(401);

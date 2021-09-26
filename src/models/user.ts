@@ -42,9 +42,10 @@ export class UserStore {
             const conn = await Client.connect()
             const sql = 'INSERT INTO users (firstname, lastname, password) VALUES ($1, $2, $3) RETURNING *'
 
+
             const hash = bcrypt.hashSync(
                 password + pepper, 
-                parseInt(saltRounds)
+                parseInt(saltRounds!)
               );
 
             const result = await conn.query(sql, [firstName, lastName, hash])

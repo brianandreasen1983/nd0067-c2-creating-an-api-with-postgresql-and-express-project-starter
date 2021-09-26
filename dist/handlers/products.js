@@ -29,17 +29,18 @@ const index = async (_req, res) => {
         res.json(products);
     }
     catch (error) {
-        throw new Error(`Unable to get products from the database: ${error}`);
+        throw new Error(`Unable to get products.`);
     }
 };
-const show = async (_req, res) => {
+const show = async (req, res) => {
+    const productId = parseInt(req.params.id);
     try {
-        const product = await productStore.show(_req.body.id);
+        const product = await productStore.show(productId);
         res.status(200);
         res.json(product);
     }
     catch (error) {
-        throw new Error(`Unable to get the requested product: ${error}`);
+        throw new Error(`Unable to get the requested product`);
     }
 };
 const create = async (req, res) => {
@@ -53,15 +54,18 @@ const create = async (req, res) => {
         res.json(newProduct);
     }
     catch (error) {
-        throw new Error(`Unable to create the product: ${product.name}. Error: ${error}`);
+        throw new Error(`Unable to create the product: ${product.name}`);
     }
 };
 const verifyAuthToken = (req, res, next) => {
     try {
         const authorizationHeader = req.headers.authorization;
-        const token = authorizationHeader.split(' ')[1];
-        const decoded = jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET);
-        next();
+        const tokenSecret = process.env.TOKEN_SECRET;
+        if (authorizationHeader !== undefined && tokenSecret !== undefined) {
+            const token = authorizationHeader.split(' ')[1];
+            jsonwebtoken_1.default.verify(token, tokenSecret);
+            next();
+        }
     }
     catch (error) {
         res.status(401);

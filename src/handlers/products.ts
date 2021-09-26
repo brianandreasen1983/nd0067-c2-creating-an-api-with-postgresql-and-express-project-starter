@@ -1,4 +1,4 @@
-import express, { Request, Response} from 'express'
+import express, { NextFunction, Request, Response} from 'express'
 import jwt, { JsonWebTokenError } from 'jsonwebtoken'
 import { Product, ProductStore} from '../models/product'
 
@@ -10,17 +10,18 @@ const index = async(_req: Request, res: Response) => {
         res.status(200)
         res.json(products)
     } catch (error) {
-        throw new Error(`Unable to get products from the database: ${error}`)
+        throw new Error(`Unable to get products.`)
     }
 }
 
-const show = async(_req: Request, res: Response) => {
+const show = async(req: Request, res: Response) => {
+    const productId = parseInt(req.params.id as string);
     try {
-        const product =  await productStore.show(_req.body.id)
+        const product =  await productStore.show(productId);
         res.status(200)
         res.json(product)
     } catch (error) {
-        throw new Error(`Unable to get the requested product: ${error}`)
+        throw new Error(`Unable to get the requested product`)
     }
 }
 
@@ -35,17 +36,20 @@ const create = async(req: Request, res: Response) => {
         res.status(201)
         res.json(newProduct)
     } catch (error) {
-        throw new Error(`Unable to create the product: ${product.name}. Error: ${error}`)
+        throw new Error(`Unable to create the product: ${product.name}`)
     }
 }
 
-const verifyAuthToken = (req: Request, res: Response, next) => {
+const verifyAuthToken = (req: Request, res: Response, next: NextFunction) => {
     try {
         const authorizationHeader = req.headers.authorization
-        const token = authorizationHeader.split(' ')[1]
-        const decoded = jwt.verify(token, process.env.TOKEN_SECRET)
+        const tokenSecret = process.env.TOKEN_SECRET;
 
-        next()
+        if(authorizationHeader !== undefined && tokenSecret !== undefined) {
+            const token = authorizationHeader.split(' ')[1]
+            jwt.verify(token, tokenSecret);
+            next()
+        }
     } catch (error) {
         res.status(401)
         throw new JsonWebTokenError(`Invalid token or token has expired.`)

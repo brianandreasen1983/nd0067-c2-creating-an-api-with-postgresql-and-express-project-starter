@@ -1,4 +1,4 @@
-import express, { Request, Response} from 'express'
+import express, { NextFunction, Request, Response} from 'express'
 import { User, UserStore } from '../models/user'
 import jwt, { JsonWebTokenError } from 'jsonwebtoken'
 
@@ -34,22 +34,28 @@ const create = async(req: Request, res: Response) => {
 
     try {
         const newUser = await userStore.create(firstName, lastName, password)
-        const token = jwt.sign({ user: newUser }, process.env.TOKEN_SECRET);
-        res.status(201)
-        res.json(token)
+        const tokenSecret = process.env.TOKEN_SECRET;
+        if(tokenSecret != undefined) {
+            const token = jwt.sign({ user: newUser }, tokenSecret);
+            res.status(201)
+            res.json(token)
+        }
     } catch (error) {
         res.status(400)
         res.json(error)
     }
 }
 
-const verifyAuthToken = (req: Request, res: Response, next) => {
+const verifyAuthToken = (req: Request, res: Response, next: NextFunction) => {
     try {
         const authorizationHeader = req.headers.authorization
-        const token = authorizationHeader.split(' ')[1]
-        const decoded = jwt.verify(token, process.env.TOKEN_SECRET)
+        const tokenSecret = process.env.TOKEN_SECRET;
 
-        next()
+        if(authorizationHeader !== undefined && tokenSecret !== undefined) {
+            const token = authorizationHeader.split(' ')[1]
+            jwt.verify(token, tokenSecret);
+            next()
+        }
     } catch (error) {
         res.status(401)
         throw new JsonWebTokenError(`Invalid token or token has expired.`)

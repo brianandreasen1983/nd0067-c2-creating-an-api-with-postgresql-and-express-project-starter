@@ -32,7 +32,4 @@ if(ENV === 'dev') {
     })
   }
 
-  console.log(ENV)
-  
-
-export default client;
+export default client!;
