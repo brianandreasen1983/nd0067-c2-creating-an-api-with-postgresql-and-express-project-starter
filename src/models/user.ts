@@ -9,6 +9,7 @@ export type User = {
 }
 
 export class UserStore {
+    /** Displays all of the users in the database from the users table. */
     async index(): Promise<User[]> {
         try {
             const conn = await Client.connect()
@@ -21,6 +22,7 @@ export class UserStore {
         }
     }
 
+    /** Displays the user record by a given userId */
     async show(userId: number): Promise<User> {
         try {
             const conn = await Client.connect()
@@ -35,6 +37,7 @@ export class UserStore {
         }
     }
 
+    /** Creates a new user into the users table of the database. */
     async create(firstName: string, lastName: string, password: string): Promise<User> {
         try {
             const saltRounds = process.env.SALT_ROUNDS
@@ -63,6 +66,7 @@ export class UserStore {
         }
     }
 
+    /** authenticates a user based on username and password provided. */
     async authenticate(username: string, password: string): Promise<User | null> {
         const conn = await Client.connect()
         const sql = 'SELECT password FROM users WHERE username=($1)'

@@ -1,12 +1,14 @@
 # Storefront Backend Project
 
 ## Getting Started
-
 This repo contains a basic Node and Express app to get you started in constructing an API. To get started, clone this repo and run `yarn` in your terminal at the project root.
 
 ## Required Technologies
-Your application must make use of the following libraries:
+Database: 
 - Postgres for the database
+If you do not have Postgres installed please download postgres and follow the installation instructions here: https://www.postgresql.org/download/
+
+Your application must make use of the following libraries:
 - Node/Express for the application logic
 - dotenv from npm for managing environment variables
 - db-migrate from npm for migrations
@@ -52,7 +54,8 @@ Ensure that you have postgres installed on our development computer before proce
 
 To install postgres if you are new to it follow the instructions here: https://www.postgresql.org/docs/9.3/tutorial-install.html
 
--- TODO: Finish filling out the setup and connecting to the database.
+### 8. Ports for the database
+The ports being used for the database is the default postgres port of 5432.
 
-### 8. Database Schema
+### 9. Database Schema
 -- TODO: Fill out the database schema.

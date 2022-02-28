@@ -4,7 +4,6 @@ import jwt, { JsonWebTokenError } from 'jsonwebtoken'
 
 const userStore = new UserStore()
 
-
 const index = async(req: Request, res: Response) => {
     try {
         const users = await userStore.index()
@@ -18,7 +17,8 @@ const index = async(req: Request, res: Response) => {
 
 const show = async(req: Request, res: Response) => {
     try {
-        const user = await userStore.show(req.body.id)
+        const userId = parseInt(req.params.id)
+        const user = await userStore.show(userId)
         res.status(200)
         res.json(user)
     } catch (error) {
@@ -31,6 +31,10 @@ const create = async(req: Request, res: Response) => {
         const firstName = req.body.firstName
         const lastName = req.body.lastName
         const password = req.body.password
+
+        console.log(firstName)
+        console.log(lastName)
+        console.log(password)
 
     try {
         const newUser = await userStore.create(firstName, lastName, password)
@@ -63,8 +67,10 @@ const verifyAuthToken = (req: Request, res: Response, next: NextFunction) => {
 }
 
 const userRoutes = (app: express.Application) => {
-    app.get('/users', verifyAuthToken, index)
-    app.get('/users/:id', verifyAuthToken, show)
+    // TODO: Needs to be protected by the AuthToken verifyAuthToken
+    app.get('/users', index)
+    // TODO: Needs to be protected by the AuthToken verifyAuthToken
+    app.get('/users/:id', show)
     app.post('/users', create)
 }
 

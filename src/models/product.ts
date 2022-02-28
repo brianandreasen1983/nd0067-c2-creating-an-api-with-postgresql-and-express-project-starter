@@ -7,6 +7,7 @@ export type Product = {
 }
 
 export class ProductStore {
+    /** Retreives all of the products from the database. */
     async index(): Promise<Product[]> {
         try {
             const conn = await Client.connect()
@@ -19,6 +20,7 @@ export class ProductStore {
         }
     }
 
+    /** retreives a product from the database based on the product id */
     async show(productId: number): Promise<Product> {
         try {
             const conn = await Client.connect()
@@ -39,6 +41,7 @@ export class ProductStore {
         }
     }
 
+    /** Inserts a new product into the database. */
     async create(p: Product): Promise<Product> {
         try {
             const conn = await Client.connect()

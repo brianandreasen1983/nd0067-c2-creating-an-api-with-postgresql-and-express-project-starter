@@ -2,7 +2,7 @@ import { User, UserStore} from '../../models/user'
 
 const userStore = new UserStore()
 // Iterate userId on every run.
-const userId = 48;
+const userId = 1;
 
 describe("User Model", () => {
     it('should have an index method', () => {

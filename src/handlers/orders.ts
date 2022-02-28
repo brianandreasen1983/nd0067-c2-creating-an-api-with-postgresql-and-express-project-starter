@@ -4,8 +4,9 @@ import jwt, {JsonWebTokenError} from 'jsonwebtoken'
 
 const orderStore = new OrderStore()
 
+// The reason this throws an error is because there are no records to query so it will drop to the catch block in the orderStore.
 const currentOrderByUserId = async(req: Request, res: Response) => {
-    const userId: number = parseInt(req.params.userid)
+    const userId: number = parseInt(req.params.userId)
 
     try {
         const ordersByUserId = orderStore.currentOrderByUser(userId)
@@ -15,6 +16,29 @@ const currentOrderByUserId = async(req: Request, res: Response) => {
         throw new Error(`Unable to get the order for the user id: ${userId}`)
     }
 }
+
+const index = async(req: Request, res: Response) => {
+    try {
+        const orders = await orderStore.index()
+        res.status(200)
+        res.json(orders)
+    } catch (error) {
+        throw new Error('An error occurred getting the orders')
+    }
+}
+
+const create = async(req: Request, res: Response) => {
+    try {
+        // TODO: Code to be able to create an order as needed.
+    } catch (error) {
+        throw new Error('An error occurred while trying to create a new order.')
+    }
+}
+
+// TODO: Make the schema change to include the product id and the quantity
+// TODO: Troubleshoot db-migrate in order to make the schema changes.
+// - id of each product in the order (product_id)
+// - quantity of each product in the order (quantity)
 
 const verifyAuthToken = (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -33,7 +57,10 @@ const verifyAuthToken = (req: Request, res: Response, next: NextFunction) => {
 }
 
 const orderRoutes = (app: express.Application) => {
-    app.post('/orders/:userid', verifyAuthToken, currentOrderByUserId)
+    // TODO: Needs to have the verify auth token in the route.
+    app.get('/orders/:userId', currentOrderByUserId)
+    app.get('/orders', index)
+    app.post('/orders', create)
 }
 
 export default orderRoutes

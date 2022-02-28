@@ -13,6 +13,7 @@ app.get('/', function (req: Request, res: Response) {
     res.send('Hello World!')
 })
 
+// All of the routes get declared here for the handlers to be used for middleware.
 productRoutes(app)
 userRoutes(app)
 orderRoutes(app)

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const user_1 = require("../../models/user");
 const userStore = new user_1.UserStore();
 // Iterate userId on every run.
-const userId = 48;
+const userId = 1;
 describe("User Model", () => {
     it('should have an index method', () => {
         expect(userStore.index).toBeDefined();

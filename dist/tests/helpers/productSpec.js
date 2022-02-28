@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const product_1 = require("../../models/product");
 const productStore = new product_1.ProductStore();
 // Iterate productId on every run.
-const productId = 48;
+const productId = 1;
 describe("Product Model", () => {
     it('should have an index method', () => {
         expect(productStore.index).toBeDefined();

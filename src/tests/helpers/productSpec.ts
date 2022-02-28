@@ -3,7 +3,7 @@ import {Product, ProductStore} from '../../models/product'
 
 const productStore = new ProductStore()
 // Iterate productId on every run.
-const productId = 48;
+const productId = 1;
 
 describe("Product Model", () => {
     it('should have an index method', () => {
@@ -21,14 +21,14 @@ describe("Product Model", () => {
     it('create method should create a single product', async () => {
         const product: Product = {
             name: "Banana",
-            price: 1
+            price: 1.00
         }
     
         const result = await productStore.create(product)
         expect(result).toEqual({
             id: productId,
             name: "Banana",
-            price: 1
+            price: 1.00
         })
     });
 
@@ -37,7 +37,7 @@ describe("Product Model", () => {
         expect(result).toEqual({
             id: productId,
             name: "Banana",
-            price: 1
+            price: 1.00
         })
     });
     
@@ -47,7 +47,7 @@ describe("Product Model", () => {
         expect(result).toEqual([{
             id: productId,
             name: "Banana",
-            price: 1
+            price: 1.00
         },])
     });
 });

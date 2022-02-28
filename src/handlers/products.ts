@@ -10,7 +10,7 @@ const index = async(_req: Request, res: Response) => {
         res.status(200)
         res.json(products)
     } catch (error) {
-        throw new Error(`Unable to get products.`)
+        throw new Error(`Unable to get productsss.`)
     }
 }
 
@@ -21,7 +21,7 @@ const show = async(req: Request, res: Response) => {
         res.status(200)
         res.json(product)
     } catch (error) {
-        throw new Error(`Unable to get the requested product`)
+        throw new Error(`Unable to get the requested product ${productId} does not exist.`)
     }
 }
 
